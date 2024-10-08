@@ -76,48 +76,121 @@ function Display(props) {
   const { travellers } = props;
 
   return (
-    <table className="bordered-table" style={styles.table}>
-      <thead>
-        <tr>
-          {/*Q3. Below table is just an example. Add more columns based on the traveller attributes you choose.*/}
-          <th>ID</th>
-          <th>Name</th>
-          <th>Phone</th>
-          <th>Booking Time</th>
-          <th>Passport</th>
-          <th>Ticket Type</th>
-          <th>Email Address</th>
-        </tr>
-      </thead>
-      <tbody>
-        {/*Q3. write code to call the JS variable defined at the top of this function to render table rows.*/
-          travellers.map(traveller => (
-            <TravellerRow key={traveller.id} traveller={traveller} />
-          ))
-        }
 
-      </tbody>
-    </table>
+    <div>
+      <table className="bordered-table" style={styles.table}>
+        <thead>
+          <tr>
+            {/*Q3. Below table is just an example. Add more columns based on the traveller attributes you choose.*/}
+            <th>ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Booking Time</th>
+            <th>Passport</th>
+            <th>Ticket Type</th>
+            <th>Email Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          {/*Q3. write code to call the JS variable defined at the top of this function to render table rows.*/
+            travellers.map(traveller => (
+              <TravellerRow key={traveller.id} traveller={traveller} />
+            ))
+          }
+
+        </tbody>
+      </table>
+
+      <p style={{ marginTop: '10px', fontStyle: 'italic' }}>
+        <strong>Note:</strong> Ticket Type <strong>0</strong> indicates "Provide Food", and Ticket Type <strong>1</strong> indicates "No Food".
+      </p>
+
+    </div>
   );
 }
 
 class Add extends React.Component {
   constructor() {
     super();
+    this.state = {
+      name: '',
+      phone: '',
+      passport: '',
+      // ticketType use 0 as default
+      ticketType: '0',
+      emailAddress: '',
+    };
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
+
+  handleChange(e) {
+    const { name, value } = e.target;
+    this.setState({ [name]: value });
+  }
+
 
   handleSubmit(e) {
     e.preventDefault();
     /*Q4. Fetch the passenger details from the add form and call bookTraveller()*/
+    const { name, phone, passport, ticketType, emailAddress } = this.state;
+    const { travellers } = this.props;
+
+    const newId = travellers.length > 0 ? Math.max(...travellers.map(t => t.id)) + 1 : 1;
+
+    const newTraveller = {
+      // the sequence should be the same as display
+      id: newId,
+      name,
+      phone,
+      bookingTime: new Date(),
+      passport,
+      ticketType: parseInt(ticketType),
+      emailAddress,
+    };
+
+
+    this.props.bookTraveller(newTraveller);
+
+    this.setState({
+      name: '',
+      phone: '',
+      passport: '',
+      ticketType: '0',
+      emailAddress: '',
+    });
   }
 
+
+
+
   render() {
+    const { name, phone, passport, ticketType, emailAddress } = this.state;
+
     return (
-      <form name="addTraveller" onSubmit={this.handleSubmit}>
+      <form name="addTraveller" onSubmit={this.handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         {/*Q4. Placeholder to enter passenger details. Below code is just an example.*/}
-        <input type="text" name="travellername" placeholder="Name" />
-        <button>Add</button>
+        {/* <input type="text" name="travellername" placeholder="Name" /> */}
+        {/* make all the input as required field */}
+        <label htmlFor="name">Name</label>
+        <input type="text" name="name" placeholder="Name" value={name} onChange={this.handleChange} required />
+
+        <label htmlFor="phone">Phone</label>
+        <input type="text" name="phone" placeholder="Phone" value={phone} onChange={this.handleChange} required />
+
+        <label htmlFor="passport">Passport</label>
+        <input type="text" name="passport" placeholder="Passport" value={passport} onChange={this.handleChange} required />
+
+        <label htmlFor="ticketType">Ticket Type</label>
+        <select name="ticketType" id="ticketType" value={ticketType} onChange={this.handleChange} required>
+          <option value="0">Provide Food</option>
+          <option value="1">No Food</option>
+        </select>
+
+        <label htmlFor="emailAddress">Email Address</label>
+        <input type="email" name="emailAddress" placeholder="Email Address" value={emailAddress} onChange={this.handleChange} required />
+
+        <button>Add Traveller</button>
       </form>
     );
   }
@@ -220,6 +293,9 @@ class TicketToRide extends React.Component {
 
   bookTraveller(passenger) {
     /*Q4. Write code to add a passenger to the traveller state variable.*/
+    this.setState((prevState) => ({
+      travellers: [...prevState.travellers, passenger],
+    }));
   }
 
   deleteTraveller(passenger) {
@@ -257,7 +333,7 @@ class TicketToRide extends React.Component {
           {selector === 2 && <Display travellers={travellers} />}
 
           {/*Q4. Code to call the component that adds a traveller.*/}
-          {selector === 3 && <Add bookTraveller={this.bookTraveller} />}
+          {selector === 3 && <Add travellers={travellers} bookTraveller={this.bookTraveller} />}
 
           {/*Q5. Code to call the component that deletes a traveller based on a given attribute.*/}
           {selector === 4 && <Delete deletefunction={this.deleteTraveller} />}
