@@ -277,9 +277,11 @@ class Homepage extends React.Component {
         }
 
         </div>
+        <p></p>
 
-        <p>Note: Grey stands for occupied by others</p>
-        <p>Green stands for still available</p>
+        <p style={{ marginTop: '10px', fontStyle: 'italic' }}>
+          <strong>Note:</strong> Seats in <strong>Gray</strong> stands for occupied by others, and seats in <strong>Green</strong> are empty.
+        </p>
 
       </div>);
   }
@@ -317,6 +319,7 @@ class TicketToRide extends React.Component {
     this.setState((prevState) => ({
       travellers: [...prevState.travellers, passenger],
     }));
+    alert(`Traveller added successfully.`);
   }
 
   deleteTraveller(passenger) {
