@@ -316,6 +316,13 @@ class TicketToRide extends React.Component {
 
   bookTraveller(passenger) {
     /*Q4. Write code to add a passenger to the traveller state variable.*/
+    const { travellers } = this.state;
+
+    if (travellers.length >= 10) {
+      alert(`This railway has 10 passengers already, cannot add more.`);
+      return;
+    }
+
     this.setState((prevState) => ({
       travellers: [...prevState.travellers, passenger],
     }));
@@ -325,6 +332,11 @@ class TicketToRide extends React.Component {
   deleteTraveller(passenger) {
     /*Q5. Write code to delete a passenger from the traveller state variable.*/
     const { travellers } = this.state;
+
+    if (travellers.length === 0) {
+      alert(`There are no travellers to delete.`);
+      return;
+    }
 
     const travellerExists = travellers.some(traveller => traveller.name === passenger);
 
