@@ -213,12 +213,33 @@ class Delete extends React.Component {
 
   render() {
     return (
-      <form name="deleteTraveller" onSubmit={this.handleSubmit}>
-        {/*Q5. Placeholder form to enter information on which passenger's ticket needs to be deleted. Below code is just an example.*/}
+      <div>
+        <form name="deleteTraveller" onSubmit={this.handleSubmit}>
+          {/*Q5. Placeholder form to enter information on which passenger's ticket needs to be deleted. Below code is just an example.*/}
 
-        <input type="text" name="travellername" placeholder="Name" />
-        <button>Delete</button>
-      </form>
+          <input type="text" name="travellername" placeholder="Name" />
+          {/* <input
+          type="text"
+          name="travellername"
+          placeholder="Name"
+          value={travellername}
+          onChange={this.handleChange}
+          required
+        /> */}
+          <button>Delete</button>
+
+
+        </form>
+
+
+        <p>
+          After delete, "Display Travellers" table will be updated accordingly.
+        </p>
+
+      </div>
+
+
+
     );
   }
 }
@@ -300,19 +321,33 @@ class TicketToRide extends React.Component {
 
   deleteTraveller(passenger) {
     /*Q5. Write code to delete a passenger from the traveller state variable.*/
+    const { travellers } = this.state;
+
+    const travellerExists = travellers.some(traveller => traveller.name === passenger);
+
     console.log("deleteTraveler:", passenger);
     // actual deletion
-    var newlist = []
-    this.state.travellers.forEach(element => {
-      if (element.name != passenger) { newlist.push(element) }
-    });
-    this.setState({ travellers: newlist });
-    console.log(newlist);
-    console.log(this.state.travellers);
+    if (travellerExists) {
+      var newlist = []
+      this.state.travellers.forEach(element => {
+        if (element.name != passenger) { newlist.push(element) }
+      });
+      this.setState({ travellers: newlist });
+      console.log(newlist);
+      console.log(this.state.travellers);
+      alert(`Traveller "${passenger}" deleted successfully.`);
+      // this.setState({ message: `Traveller "${passenger}" deleted successfully.` });
+    }
+    else {
+      alert(`Traveller "${passenger}" not found in the list.`);
+      // this.setState({ message: `Traveller "${passenger}" not found in the list.` });
+    }
+
+
 
   }
   render() {
-    const { selector, travellers } = this.state;
+    const { selector, travellers, message } = this.state;
     return (
       <div>
         <h1>Ticket To Ride</h1>
@@ -325,6 +360,9 @@ class TicketToRide extends React.Component {
           <button style={styles.button} onClick={() => this.setSelector(3)}>Add Traveller</button>
           <button style={styles.button} onClick={() => this.setSelector(4)}>Delete Traveller</button>
         </div>
+
+        {message && <p style={{ color: 'red' }}>{message}</p>}
+
         <div>
           {/*Only one of the below four divisions is rendered based on the button clicked by the user.*/}
           {/*Q2 and Q6. Code to call Instance that draws Homepage. Homepage shows Visual Representation of free seats.*/}
